@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Real Time Timer & Video Sinkron</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        background: white;
+    }
+    .label {
+        font-size: 20px;
+        margin-top: 20px;
+        color: gray;
+    }
+    .timer {
+        font-size: 50px;
+        margin-top: 10px;
+        font-family: 'Courier New', monospace;
+    }
+    .video-container {
+        margin: 20px auto;
+        width: 90vw;
+        max-width: 800px;
+        aspect-ratio: 16 / 9;
+    }
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+</style>
+</head>
+<body>
+
+<div class="label">"waktu"</div>
+<div class="timer" id="timer">00:00</div>
+
+<div class="video-container">
+    <iframe id="videoFrame"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<script>
+const maxSeconds = 3 * 60 + 59;
+const timerElement = document.getElementById('timer');
+
+// Atur waktu mulai absolut
+const startTime = new Date();
+startTime.setHours(8, 0, 0, 0); // mulai dari 08:00:00 UTC
+
+// Hitung detik berjalan
+function getCurrentSecond() {
+    const now = new Date();
+    let elapsed = Math.floor((now - startTime) / 1000);
+    if (elapsed < 0) elapsed = 0;
+    return elapsed % (maxSeconds + 1);
+}
+
+// Update Timer Realtime
+function updateTimer() {
+    const currentSeconds = getCurrentSecond();
+    const minutes = Math.floor(currentSeconds / 60);
+    const seconds = currentSeconds % 60;
+    timerElement.textContent =
+        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    requestAnimationFrame(updateTimer);
+}
+
+// Load Video Sinkron
+function loadVideoAtCurrentTime() {
+    const currentSeconds = getCurrentSecond();
+    const videoURL = `https://www.youtube.com/embed/icmGvcbYls0?si=NyhwQsTnDEBCZvMw&autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&rel=0&start=${currentSeconds}&playlist=icmGvcbYls0`;
+    document.getElementById('videoFrame').src = videoURL;
+}
+
+loadVideoAtCurrentTime();
+updateTimer();
+</script>
+
+</body>
+</html>
